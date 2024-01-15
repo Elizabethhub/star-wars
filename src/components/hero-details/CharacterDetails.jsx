@@ -57,7 +57,6 @@ const CharacterDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, character]);
 
-  console.log("spaceShips", spaceships);
   const movieNames = character?.films.map((filmUrl) => {
     const movie = movies.find((film) => film.url === filmUrl);
     return movie.title;
