@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchCharacters, fetchMovies } from "../services/swapi";
-import { setCharacters, setMovies } from "../redux/actions";
+import { fetchCharacters, fetchMovies, fetchSpecies, fetchSpaceship } from "../services/swapi";
+import { setCharacters, setMovies, setSpecies, setSpaceships } from "../redux/actions";
 import FilterForm from "./FilterForm";
 import styled from "styled-components";
 
@@ -35,25 +35,34 @@ const Characters = () => {
   const filters = useSelector((state) => state.filters);
 
   React.useEffect(() => {
-    const getCharacters = async () => {
-      let fetchedCharacters = await fetchCharacters();
-      fetchedCharacters = fetchedCharacters.map((character) => {
+    const fetchData = async () => {
+      const fetchedCharacters = await fetchCharacters();
+      const characters = fetchedCharacters.map((character) => {
         if (!["male", "female"].includes(character.gender)) {
           return { ...character, gender: "other" };
         }
         return character;
       });
-      dispatch(setCharacters(fetchedCharacters));
-    };
-    const getMovies = async () => {
+
       const fetchedMovies = await fetchMovies();
       const movies = fetchedMovies.map((movie) => movie);
-      dispatch(setMovies(movies));
-    };
-    getCharacters();
-    getMovies();
-  }, [dispatch]);
 
+      const fetchedSpecies = await fetchSpecies();
+      const species = fetchedSpecies.map((specie) => specie);
+
+      const spaceshipsPromises = fetchedCharacters.flatMap((character) =>
+        character.starships.map((spaceshipUrl) => fetchSpaceship(spaceshipUrl))
+      );
+      const fetchedSpaceships = await Promise.all(spaceshipsPromises);
+
+      dispatch(setCharacters(characters));
+      dispatch(setMovies(movies));
+      dispatch(setSpecies(species));
+      dispatch(setSpaceships(fetchedSpaceships));
+    };
+
+    fetchData();
+  }, [dispatch]);
   const filteredCharacters = characters.filter((character) => {
     return (
       (filters.movies === "" || character.films.includes(filters.movies) || filters.movies === "All") &&

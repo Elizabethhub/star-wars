@@ -93,7 +93,7 @@ const FilterForm = () => {
         <input type="number" name="maxMass" value={filters.maxMass} onChange={handleInputChange} />
       </label>
 
-      <ClearFiltersButton onClick={handleClearFilters}>Clear Filters</ClearFiltersButton>
+      <ClearFiltersButton onClick={handleClearFilters}>Reset</ClearFiltersButton>
     </FilterFormContainer>
   );
 };

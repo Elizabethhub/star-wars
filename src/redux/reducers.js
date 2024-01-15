@@ -8,6 +8,8 @@ const initialState = {
   },
   characters: [],
   movies: [],
+  species: [],
+  spaceships: [],
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -26,6 +28,16 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         movies: action.payload,
+      };
+    case "SET_SPECIES":
+      return {
+        ...state,
+        species: action.payload,
+      };
+    case "SET_SPACESHIPS":
+      return {
+        ...state,
+        spaceships: action.payload,
       };
     default:
       return state;

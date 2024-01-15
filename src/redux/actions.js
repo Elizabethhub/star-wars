@@ -12,3 +12,13 @@ export const setMovies = (movies) => ({
   type: "SET_MOVIES",
   payload: movies,
 });
+
+export const setSpecies = (species) => ({
+  type: "SET_SPECIES",
+  payload: species,
+});
+
+export const setSpaceships = (spaceships) => ({
+  type: "SET_SPACESHIPS",
+  payload: spaceships,
+});
