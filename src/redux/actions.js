@@ -22,3 +22,7 @@ export const setSpaceships = (spaceships) => ({
   type: "SET_SPACESHIPS",
   payload: spaceships,
 });
+export const setLoading = (loading) => ({
+  type: "SET_LOADING",
+  payload: loading,
+});

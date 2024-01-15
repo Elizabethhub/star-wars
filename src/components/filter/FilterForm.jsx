@@ -1,32 +1,9 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFilters } from "../redux/actions";
-import styled from "styled-components";
+import { setFilters } from "../../redux/actions";
+import { initialState } from "../../redux/reducers";
+import { ClearFiltersButton, FilterFormContainer, FilterSection, RadioGroup, Select } from "./FilterFormStyled";
 
-const FilterFormContainer = styled.div`
-  background-color: #f0f0f0;
-  padding: 10px;
-  margin-bottom: 20px;
-`;
-
-const ClearFiltersButton = styled.button`
-  background-color: #ff5555;
-  color: #fff;
-  padding: 8px 12px;
-  border: none;
-  cursor: pointer;
-`;
-
-const RadioGroup = styled.div`
-  margin-bottom: 10px;
-
-  label {
-    margin-right: 10px;
-  }
-`;
-const Select = styled.select`
-  margin-right: 10px;
-`;
 const FilterForm = () => {
   const dispatch = useDispatch();
   const filters = useSelector((state) => state.filters);
@@ -38,21 +15,13 @@ const FilterForm = () => {
     dispatch(setFilters(updatedFilters));
   };
   const handleClearFilters = () => {
-    dispatch(
-      setFilters({
-        movies: "",
-        name: "",
-        gender: "",
-        minMass: "",
-        maxMass: "",
-      })
-    );
+    dispatch(setFilters(initialState.filters));
   };
   const genderLabels = ["male", "female", "other"];
   return (
     <FilterFormContainer>
-      <label>
-        Movies:
+      <FilterSection>
+        <label>Movies:</label>
         <Select name="movies" value={filters.movies} onChange={handleInputChange}>
           <option value="">All</option>
           {movies.map((movie) => (
@@ -61,38 +30,37 @@ const FilterForm = () => {
             </option>
           ))}
         </Select>
-      </label>
-
-      <label>
-        Name:
+      </FilterSection>
+      <FilterSection>
+        <label>Name:</label>
         <input type="text" name="name" value={filters.name} onChange={handleInputChange} />
-      </label>
+      </FilterSection>
 
-      <RadioGroup>
-        {genderLabels.map((label) => (
-          <label key={label}>
-            <input
-              type="radio"
-              name="gender"
-              value={label}
-              checked={filters.gender === label}
-              onChange={handleInputChange}
-            />
-            {label}
-          </label>
-        ))}
-      </RadioGroup>
-
-      <label>
-        Mass (Min):
+      <FilterSection>
+        <label>Mass (Min): </label>
         <input type="number" name="minMass" value={filters.minMass} onChange={handleInputChange} />
-      </label>
-
-      <label>
-        Mass (Max):
+      </FilterSection>
+      <FilterSection>
+        <label>Mass (Max): </label>
         <input type="number" name="maxMass" value={filters.maxMass} onChange={handleInputChange} />
-      </label>
-
+      </FilterSection>
+      <FilterSection>
+        <RadioGroup>
+          <label>Gender:</label>
+          {genderLabels.map((label) => (
+            <label key={label}>
+              <input
+                type="radio"
+                name="gender"
+                value={label}
+                checked={filters.gender === label}
+                onChange={handleInputChange}
+              />
+              {label}
+            </label>
+          ))}
+        </RadioGroup>
+      </FilterSection>
       <ClearFiltersButton onClick={handleClearFilters}>Reset</ClearFiltersButton>
     </FilterFormContainer>
   );

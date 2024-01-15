@@ -44,10 +44,3 @@ ul {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-.container {
-  margin-right: auto;
-  margin-left: auto;
-  max-width: 1200px;
-  padding-left: 15px;
-  padding-right: 15px;
-}

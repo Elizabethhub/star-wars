@@ -1,4 +1,4 @@
-const initialState = {
+export const initialState = {
   filters: {
     movies: "",
     name: "",
@@ -10,6 +10,7 @@ const initialState = {
   movies: [],
   species: [],
   spaceships: [],
+  loading: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -38,6 +39,11 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         spaceships: action.payload,
+      };
+    case "SET_LOADING":
+      return {
+        ...state,
+        loading: action.payload,
       };
     default:
       return state;
