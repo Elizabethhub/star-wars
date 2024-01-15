@@ -13,6 +13,7 @@ import {
   ListTitle,
   ListItem,
 } from "./CharacterDetailsStyled";
+import Error from "../Error";
 
 const CharacterDetails = () => {
   const dispatch = useDispatch();
@@ -33,10 +34,10 @@ const CharacterDetails = () => {
       try {
         if (species.length === 0) {
           const fetchedSpecies = await fetchSpecies();
-          const species = fetchedSpecies.map((specie) => specie);
+          const species = fetchedSpecies?.map((specie) => specie);
           dispatch(setSpecies(species));
         }
-        const spaceshipsPromises = character.starships.map((spaceshipUrl) => {
+        const spaceshipsPromises = character.starships?.map((spaceshipUrl) => {
           if (!spaceships.some((ship) => ship.url === spaceshipUrl)) {
             // Fetch the spaceship if it's not present
             return fetchSpaceship(spaceshipUrl);
@@ -56,22 +57,27 @@ const CharacterDetails = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, character]);
+  if (characterId > 88) {
+    return <Error />;
+  }
 
-  const movieNames = character?.films.map((filmUrl) => {
-    const movie = movies.find((film) => film.url === filmUrl);
-    return movie.title;
-  });
+  const movieNames = character?.films?.length
+    ? character?.films?.map((filmUrl) => {
+        const movie = movies.find((film) => film.url === filmUrl);
+        return movie.title;
+      })
+    : ["none"];
   const speciesNames = character?.species.length
-    ? character.species.map((speciesUrl) => {
+    ? character.species?.map((speciesUrl) => {
         const specie = species.find((type) => type.url === speciesUrl);
-        return specie && specie.name ? specie.name : "none";
+        return specie.name;
       })
     : ["none"];
   const characterSpaceships = character?.starships.length
-    ? character.starships.map((spaceshipUrl) => {
+    ? character.starships?.map((spaceshipUrl) => {
         const spaceshipId = spaceshipUrl.split("/")[5];
         const spaceshipName = spaceships.find((ship) => ship.url === `https://swapi.dev/api/starships/${spaceshipId}/`);
-        return spaceshipName && spaceshipName.name ? spaceshipName.name : "none";
+        return spaceshipName.name;
       })
     : ["none"];
   const characterImageSrc = `https://starwars-visualguide.com/assets/img/characters/${characterId}.jpg`;
@@ -88,19 +94,19 @@ const CharacterDetails = () => {
             <h1>{character?.name}</h1>
             <ListTitle>Species:</ListTitle>
             <ListContainer>
-              {speciesNames.map((specie, index) => (
+              {speciesNames?.map((specie, index) => (
                 <ListItem key={index}>{`- ${specie}`}</ListItem>
               ))}
             </ListContainer>
             <ListTitle>Movies:</ListTitle>
             <ListContainer>
-              {movieNames.map((movie, index) => (
+              {movieNames?.map((movie, index) => (
                 <ListItem key={index}>{`- ${movie}`}</ListItem>
               ))}
             </ListContainer>
             <ListTitle>Spaceships:</ListTitle>
             <ListContainer>
-              {characterSpaceships.map((spaceship, index) => (
+              {characterSpaceships?.map((spaceship, index) => (
                 <ListItem key={index}>{`- ${spaceship}`}</ListItem>
               ))}
             </ListContainer>
