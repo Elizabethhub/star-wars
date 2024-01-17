@@ -66,20 +66,20 @@ const CharacterDetails = () => {
         const movie = movies.find((film) => film.url === filmUrl);
         return movie && movie.title ? movie.title : "";
       })
-    : ["none"];
+    : ["n/a"];
   const speciesNames = character?.species.length
     ? character.species?.map((speciesUrl) => {
         const specie = species.find((type) => type.url === speciesUrl);
         return specie && specie.name ? specie.name : "";
       })
-    : ["none"];
+    : ["n/a"];
   const characterSpaceships = character?.starships.length
     ? character.starships?.map((spaceshipUrl) => {
         const spaceshipId = spaceshipUrl.split("/")[5];
         const spaceshipName = spaceships.find((ship) => ship.url === `https://swapi.dev/api/starships/${spaceshipId}/`);
         return spaceshipName && spaceshipName.name ? spaceshipName.name : "";
       })
-    : ["none"];
+    : ["n/a"];
   const characterImageSrc = `https://starwars-visualguide.com/assets/img/characters/${characterId}.jpg`;
   return (
     <>
