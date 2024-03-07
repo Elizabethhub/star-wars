@@ -8,9 +8,11 @@ const FilterForm = () => {
   const dispatch = useDispatch();
   const filters = useSelector((state) => state.filters);
   const movies = useSelector((state) => state.movies);
-
   const handleInputChange = (e) => {
     let { name, value } = e.target;
+    if (value === "other") {
+      value = "n/a";
+    }
     const updatedFilters = { ...filters, [name]: value };
     dispatch(setFilters(updatedFilters));
   };
@@ -24,11 +26,13 @@ const FilterForm = () => {
         <label>Movies:</label>
         <Select name="movies" value={filters.movies} onChange={handleInputChange}>
           <option value="">All</option>
-          {movies.map((movie) => (
-            <option key={movie.url} value={movie.url}>
-              {movie.title}
-            </option>
-          ))}
+          {movies.map((movie) => {
+            return (
+              <option key={movie.properties.url} value={movie.properties.url}>
+                {movie.properties.title}
+              </option>
+            );
+          })}
         </Select>
       </FilterSection>
       <FilterSection>
@@ -47,18 +51,16 @@ const FilterForm = () => {
       <FilterSection>
         <RadioGroup>
           <label>Gender:</label>
-          {genderLabels.map((label) => (
-            <label key={label}>
-              <input
-                type="radio"
-                name="gender"
-                value={label}
-                checked={filters.gender === label}
-                onChange={handleInputChange}
-              />
-              {label}
-            </label>
-          ))}
+          {genderLabels.map((label) => {
+            const match = filters.gender === "n/a" && label === "other" ? true : filters.gender === label;
+
+            return (
+              <label key={label}>
+                <input type="radio" name="gender" value={label} checked={match} onChange={handleInputChange} />
+                {label}
+              </label>
+            );
+          })}
         </RadioGroup>
       </FilterSection>
       <ClearFiltersButton onClick={handleClearFilters}>Reset</ClearFiltersButton>

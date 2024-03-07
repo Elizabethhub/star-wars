@@ -23,7 +23,7 @@ const CharacterDetails = () => {
   const species = useSelector((state) => state.species);
   const spaceships = useSelector((state) => state.spaceships);
   const loading = useSelector((state) => state.loading);
-  const character = characters.find((char) => char.url.includes(`/${characterId}/`));
+  const character = characters.find((char) => char.properties.url.includes(`/${characterId}/`));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,9 +94,9 @@ const CharacterDetails = () => {
             <h1>{character?.name}</h1>
             <ListTitle>Species:</ListTitle>
             <ListContainer>
-              {speciesNames?.map((specie, index) => (
-                <ListItem key={index}>{`- ${specie}`}</ListItem>
-              ))}
+              {speciesNames?.map((specie, index) => {
+                return <ListItem key={index}>{`- ${specie}`}</ListItem>;
+              })}
             </ListContainer>
             <ListTitle>Movies:</ListTitle>
             <ListContainer>

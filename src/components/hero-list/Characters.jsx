@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCharacters, setMovies, setLoading } from "../../redux/actions";
 import { Link } from "react-router-dom";
-import { fetchCharacters, fetchMovies } from "../../services/swapi";
+import { fetchCharacters, fetchMovies, fetchOneCharacter } from "../../services/swapi";
 import AppLoader from "../AppLoader";
 import CharacterCard from "../hero-card/CharacterCard";
 import FilterForm from "../filter/FilterForm";
@@ -21,17 +21,18 @@ const Characters = () => {
       try {
         if (characters.length === 0) {
           const fetchedCharacters = await fetchCharacters();
-          const characters = fetchedCharacters.map((character) => {
-            if (!["male", "female"].includes(character.gender)) {
-              return { ...character, gender: "other" };
-            }
-            return character;
-          });
-          dispatch(setCharacters(characters));
+
+          const updatedCharacters = await Promise.all(
+            fetchedCharacters.map(async (person) => {
+              const fullPersonInfo = await fetchOneCharacter(person.url);
+              return fullPersonInfo;
+            })
+          );
+          dispatch(setCharacters(updatedCharacters));
         }
         if (movies.length === 0) {
           const fetchedMovies = await fetchMovies();
-          const movies = fetchedMovies.map((movie) => movie);
+          const movies = fetchedMovies?.map((movie) => movie);
           dispatch(setMovies(movies));
         }
       } catch (error) {
@@ -46,15 +47,23 @@ const Characters = () => {
   }, [dispatch]);
 
   const filteredCharacters = characters.filter((character) => {
+    let movieMatch;
+    movies.map((movie) => {
+      if (movie.properties.url === filters.movies) {
+        movieMatch = movie.properties.url === filters.movies && movie.properties.characters.includes(character.properties.url);
+      }
+
+      return movieMatch;
+    });
+
     return (
-      (filters.movies === "" || character.films.includes(filters.movies) || filters.movies === "All") &&
-      (filters.name === "" || character.name.toLowerCase().includes(filters.name.toLowerCase())) &&
-      (filters.gender === "" || character.gender.toLowerCase() === filters.gender.toLowerCase()) &&
-      (filters.minMass === "" || parseInt(character.mass, 10) >= parseInt(filters.minMass, 10)) &&
-      (filters.maxMass === "" || parseInt(character.mass, 10) <= parseInt(filters.maxMass, 10))
+      (filters.movies === "" || movieMatch || filters.movies === "All") &&
+      (filters.name === "" || character.properties.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (filters.gender === "" || character.properties.gender.toLowerCase() === filters.gender.toLowerCase()) &&
+      (filters.minMass === "" || parseInt(character.properties.mass, 10) >= parseInt(filters.minMass, 10)) &&
+      (filters.maxMass === "" || parseInt(character.properties.mass, 10) <= parseInt(filters.maxMass, 10))
     );
   });
-
   return (
     <>
       {isLoading ? (
@@ -64,13 +73,15 @@ const Characters = () => {
           <FilterForm />
           <h2 style={{ textAlign: "center", color: "#fff" }}>Star Wars Characters</h2>
           <CharacterListItem>
-            {filteredCharacters.map((character) => (
-              <li key={character.url}>
-                <Link to={`/characters/${character.url.match(/\d+/)[0]}`}>
-                  <CharacterCard character={character} />
-                </Link>
-              </li>
-            ))}
+            {filteredCharacters.map((character) => {
+              return (
+                <li key={character.properties.url}>
+                  <Link to={`/characters/${character?.properties?.url.match(/\d+/)[0]}`}>
+                    <CharacterCard character={character} />
+                  </Link>
+                </li>
+              );
+            })}
           </CharacterListItem>
         </CharacterListContainer>
       )}
